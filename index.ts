@@ -1,5 +1,5 @@
-import { Player, stringToPlayer } from './types/player';
-import { advantage, game, Point, PointsData, Score } from './types/score';
+import { isSamePlayer, Player, stringToPlayer } from './types/player';
+import { advantage, deuce, game, Point, PointsData, Score } from './types/score';
 import { pipe, Option } from 'effect'
 
 // -------- Tooling functions --------- //
@@ -72,7 +72,8 @@ export const scoreWhenAdvantage = (
   advantagedPlayed: Player,
   winner: Player
 ): Score => {
-  return game(winner);
+  if (isSamePlayer(advantagedPlayed, winner)) return game(winner);
+  return deuce();
 };
 
 
