@@ -21,8 +21,20 @@ export const otherPlayer = (player: Player) => {
   }
 };
 // Exercice 1 :
-export const pointToString = (point: Point): string =>
-  'You can use pattern matching with switch case pattern.';
+export const pointToString = (point: Point): string => {
+  switch (point) {
+    case 0:
+      return 'Love';
+    case 1:
+      return 'Fifteen';
+    case 2:
+      return 'Thirty';
+    case 3:
+      return 'Forty';
+    default:
+      throw new Error(`Invalid point: ${point}`);
+  }
+};
 
 export const scoreToString = (score: Score): string =>
   'You can use pattern matching with switch case pattern.';
