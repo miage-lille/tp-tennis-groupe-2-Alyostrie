@@ -1,8 +1,19 @@
 import { Player } from './player';
 
-// Surely not the best choice
-export type Point = number;
+// ---------- Points ---------- //
 
+export type Love = { kind: 'LOVE' };
+export type Fifteen = { kind: 'FIFTEEN' };
+export type Thirty = { kind: 'THIRTY' };
+
+export type Point = Love | Fifteen | Thirty;
+
+// Type constructors
+export const love = (): Love => ({ kind: 'LOVE' });
+export const fifteen = (): Fifteen => ({ kind: 'FIFTEEN' });
+export const thirty = (): Thirty => ({ kind: 'THIRTY' });
+
+// ---------- PointsData ---------- //
 export type PointsData = {
   PLAYER_ONE: Point;
   PLAYER_TWO: Point;
@@ -13,10 +24,7 @@ export type Points = {
   pointsData: PointsData;
 };
 
-export const points = (
-  playerOnePoints: Point,
-  playerTwoPoints: Point
-): Points => ({
+export const points = (playerOnePoints: Point, playerTwoPoints: Point): Points => ({
   kind: 'POINTS',
   pointsData: {
     PLAYER_ONE: playerOnePoints,
@@ -24,34 +32,17 @@ export const points = (
   },
 });
 
+// ---------- FortyData ---------- //
 export type FortyData = {
-  player: Player; // The player who have forty points
-  otherPoint: Point; // Points of the other player
-};
-
-// ---------- New domain types ---------- //
-
-export type Deuce = {
-  kind: 'DEUCE';
+  player: Player;      // player who has 40
+  otherPoint: Point;   // other player's points (LOVE, FIFTEEN, THIRTY)
 };
 
 export type Forty = {
   kind: 'FORTY';
-  player: Player;      // Player who has 40
-  otherPoint: Point;  // Other player's points (0,15,30)
+  player: Player;
+  otherPoint: Point;
 };
-
-
-export type Advantage = {
-  kind: 'ADVANTAGE';
-  player: Player; // Player with advantage
-};
-
-// ---------- Type constructors ---------- //
-
-export const deuce = (): Deuce => ({
-  kind: 'DEUCE',
-});
 
 export const forty = (player: Player, otherPoint: Point): Forty => ({
   kind: 'FORTY',
@@ -59,23 +50,16 @@ export const forty = (player: Player, otherPoint: Point): Forty => ({
   otherPoint,
 });
 
-export const advantage = (player: Player): Advantage => ({
-  kind: 'ADVANTAGE',
-  player,
-});
+// ---------- Deuce / Advantage / Game ---------- //
 
-// ---------- Game ---------- //
+export type Deuce = { kind: 'DEUCE' };
+export const deuce = (): Deuce => ({ kind: 'DEUCE' });
 
-export type Game = {
-  kind: 'GAME';
-  player: Player; // Player has won
-};
+export type Advantage = { kind: 'ADVANTAGE'; player: Player };
+export const advantage = (player: Player): Advantage => ({ kind: 'ADVANTAGE', player });
 
-export const game = (winner: Player): Game => ({
-  kind: 'GAME',
-  player: winner,
-});
+export type Game = { kind: 'GAME'; player: Player };
+export const game = (player: Player): Game => ({ kind: 'GAME', player });
 
-// ---------- Global Score type ---------- //
-
-export type Score = Points | Deuce | Forty | Advantage | Game;
+// ---------- Global Score ---------- //
+export type Score = Points | Forty | Deuce | Advantage | Game;

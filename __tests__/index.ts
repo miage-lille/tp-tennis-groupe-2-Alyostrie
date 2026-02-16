@@ -2,6 +2,7 @@ import { describe, expect, test } from '@jest/globals';
 import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty, stringToPoint} from '..';
 import { stringToPlayer } from '../types/player';
 import { advantage, deuce, forty, game } from '../types/score';
+import { thirty } from '../types/score';
 
 
 describe('Tests for tooling functions', () => {
@@ -110,7 +111,4 @@ describe('Tests for transition functions', () => {
   //   );
   // });
 });
-function thirty(): number {
-  throw new Error('Function not implemented.');
-}
 

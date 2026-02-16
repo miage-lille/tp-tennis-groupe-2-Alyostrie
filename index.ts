@@ -1,5 +1,5 @@
 import { isSamePlayer, Player, stringToPlayer } from './types/player';
-import { advantage, deuce, Forty, FortyData, game, Point, PointsData, Score } from './types/score';
+import { advantage, deuce, fifteen, forty, Forty, FortyData, game, love, Point, PointsData, Score, thirty } from './types/score';
 import { pipe, Option } from 'effect'
 
 // -------- Tooling functions --------- //
@@ -20,21 +20,32 @@ export const otherPlayer = (player: Player) => {
       return stringToPlayer('PLAYER_ONE');
   }
 };
-// Exercice 1 :
-export const pointToString = (point: Point): string => {
-  switch (point) {
-    case 0:
-      return 'Love';
-    case 1:
-      return 'Fifteen';
-    case 2:
-      return 'Thirty';
-    case 3:
-      return 'Forty';
-    default:
-      throw new Error(`Invalid point: ${point}`);
+
+export const incrementPoint = (point: Point) : Option.Option<Point> => {
+  switch (point.kind) {
+    case 'LOVE':
+      return Option.some(fifteen());
+    case 'FIFTEEN':
+      return Option.some(thirty());
+    case 'THIRTY':
+      return Option.none();
   }
 };
+
+
+
+// Exercice 1 :
+export const pointToString = (point: Point): string => {
+  switch (point.kind) {
+    case 'LOVE':
+      return 'Love';
+    case 'FIFTEEN':
+      return 'Fifteen';
+    case 'THIRTY':
+      return 'Thirty';
+  }
+};
+
 
 export const scoreToString = (score: Score): string => {
   switch (score.kind) {
@@ -55,6 +66,7 @@ export const scoreToString = (score: Score): string => {
     case 'DEUCE':
       return 'Deuce';
 
+
     case 'ADVANTAGE':
       return `Advantage ${playerToString(score.player)}`;
 
@@ -66,17 +78,16 @@ export const scoreToString = (score: Score): string => {
 export const stringToPoint = (str: string): Point => {
   switch (str) {
     case 'LOVE':
-      return 0;
+      return love();
     case 'FIFTEEN':
-      return 1;
+      return fifteen();
     case 'THIRTY':
-      return 2;
-    case 'FORTY':
-      return 3;
+      return thirty();
     default:
       throw new Error(`Invalid point string: ${str}`);
   }
 };
+
 
 
 export const scoreWhenDeuce = (winner: Player): Score => 
@@ -95,7 +106,16 @@ export const scoreWhenAdvantage = (
 export const scoreWhenForty = (
   currentForty: FortyData,
   winner: Player
-): Score => game(winner);
+): Score => {
+  if (isSamePlayer(currentForty.player, winner)) return game(winner);
+  return pipe(
+    incrementPoint(currentForty.otherPoint),
+    Option.match({
+      onNone: () => deuce(),
+      onSome: p => forty(currentForty.player, p) as Score
+    })
+  );
+};
 
 
 // Exercice 2
