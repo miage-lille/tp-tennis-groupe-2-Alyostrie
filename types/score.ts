@@ -24,6 +24,11 @@ export const points = (
   },
 });
 
+export type FortyData = {
+  player: Player; // The player who have forty points
+  otherPoint: Point; // Points of the other player
+};
+
 // ---------- New domain types ---------- //
 
 export type Deuce = {
@@ -35,6 +40,7 @@ export type Forty = {
   player: Player;      // Player who has 40
   otherPoint: Point;  // Other player's points (0,15,30)
 };
+
 
 export type Advantage = {
   kind: 'ADVANTAGE';
