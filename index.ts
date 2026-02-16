@@ -63,6 +63,21 @@ export const scoreToString = (score: Score): string => {
   }
 };
 
+export const stringToPoint = (str: string): Point => {
+  switch (str) {
+    case 'LOVE':
+      return 0;
+    case 'FIFTEEN':
+      return 1;
+    case 'THIRTY':
+      return 2;
+    case 'FORTY':
+      return 3;
+    default:
+      throw new Error(`Invalid point string: ${str}`);
+  }
+};
+
 
 export const scoreWhenDeuce = (winner: Player): Score => 
   advantage(winner)
