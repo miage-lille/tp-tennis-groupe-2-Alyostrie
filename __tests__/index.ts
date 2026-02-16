@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
 import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce } from '..';
 import { stringToPlayer } from '../types/player';
-import { advantage, game } from '../types/score';
+import { advantage, deuce, game } from '../types/score';
 
 describe('Tests for tooling functions', () => {
   test('Given playerOne when playerToString', () => {
@@ -27,6 +27,16 @@ test('Given advantage when advantagedPlayer wins, score is Game avantagedPlayer'
     const winner = advantagedPlayer;
     const score = scoreWhenAdvantage(advantagedPlayer, winner);
     const scoreExpected = game(winner);
+    expect(score).toStrictEqual(scoreExpected);
+  })
+});
+
+test('Given advantage when otherPlayer wins, score is Deuce', () => {
+  ['PLAYER_ONE', 'PLAYER_TWO'].forEach((advantaged) => {
+    const advantagedPlayer = stringToPlayer(advantaged);
+    const winner = otherPlayer(advantagedPlayer);
+    const score = scoreWhenAdvantage(advantagedPlayer, winner);
+    const scoreExpected = deuce();
     expect(score).toStrictEqual(scoreExpected);
   })
 });
