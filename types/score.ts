@@ -24,7 +24,41 @@ export const points = (
   },
 });
 
-// Exerice 0: Write all type constructors of Points, Deuce, Forty and Advantage types.
+// ---------- New domain types ---------- //
+
+export type Deuce = {
+  kind: 'DEUCE';
+};
+
+export type Forty = {
+  kind: 'FORTY';
+  player: Player;      // Player who has 40
+  otherPoint: Point;  // Other player's points (0,15,30)
+};
+
+export type Advantage = {
+  kind: 'ADVANTAGE';
+  player: Player; // Player with advantage
+};
+
+// ---------- Type constructors ---------- //
+
+export const deuce = (): Deuce => ({
+  kind: 'DEUCE',
+});
+
+export const forty = (player: Player, otherPoint: Point): Forty => ({
+  kind: 'FORTY',
+  player,
+  otherPoint,
+});
+
+export const advantage = (player: Player): Advantage => ({
+  kind: 'ADVANTAGE',
+  player,
+});
+
+// ---------- Game ---------- //
 
 export type Game = {
   kind: 'GAME';
@@ -36,4 +70,6 @@ export const game = (winner: Player): Game => ({
   player: winner,
 });
 
-export type Score = Points | Game;
+// ---------- Global Score type ---------- //
+
+export type Score = Points | Deuce | Forty | Advantage | Game;
