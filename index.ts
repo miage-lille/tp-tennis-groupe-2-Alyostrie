@@ -154,7 +154,28 @@ export const scoreWhenGame = (winner: Player): Score => {
 };
 
 export const score = (currentScore: Score, winner: Player): Score => {
-  throw new Error('not implemented');
+  switch (currentScore.kind) {
+    case 'POINTS':
+      return scoreWhenPoint(currentScore.pointsData, winner);
+
+    case 'FORTY':
+      return scoreWhenForty(
+        { player: currentScore.player, otherPoint: currentScore.otherPoint },
+        winner
+      );
+
+    case 'DEUCE':
+      return scoreWhenDeuce(winner);
+
+    case 'ADVANTAGE':
+      return scoreWhenAdvantage(currentScore.player, winner);
+
+    case 'GAME':
+      return currentScore;
+  }
 };
+
+const newGame: Score = points(love(), love());
+
 
 
