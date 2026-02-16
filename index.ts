@@ -99,3 +99,5 @@ export const scoreWhenGame = (winner: Player): Score => {
 export const score = (currentScore: Score, winner: Player): Score => {
   throw new Error('not implemented');
 };
+
+
