@@ -1,5 +1,5 @@
-import { Player, stringToPlayer } from './types/player';
-import { Point, PointsData, Score } from './types/score';
+import { isSamePlayer, Player, stringToPlayer } from './types/player';
+import { advantage, deuce, fifteen, forty, Forty, FortyData, game, love, Point, points, PointsData, Score, thirty } from './types/score';
 import { pipe, Option } from 'effect'
 
 // -------- Tooling functions --------- //
@@ -20,45 +20,162 @@ export const otherPlayer = (player: Player) => {
       return stringToPlayer('PLAYER_ONE');
   }
 };
-// Exercice 1 :
-export const pointToString = (point: Point): string =>
-  'You can use pattern matching with switch case pattern.';
 
-export const scoreToString = (score: Score): string =>
-  'You can use pattern matching with switch case pattern.';
-
-export const scoreWhenDeuce = (winner: Player): Score => {
-  throw new Error('not implemented');
+export const incrementPoint = (point: Point) : Option.Option<Point> => {
+  switch (point.kind) {
+    case 'LOVE':
+      return Option.some(fifteen());
+    case 'FIFTEEN':
+      return Option.some(thirty());
+    case 'THIRTY':
+      return Option.none();
+  }
 };
+
+
+
+// Exercice 1 :
+export const pointToString = (point: Point): string => {
+  switch (point.kind) {
+    case 'LOVE':
+      return 'Love';
+    case 'FIFTEEN':
+      return 'Fifteen';
+    case 'THIRTY':
+      return 'Thirty';
+  }
+};
+
+
+export const scoreToString = (score: Score): string => {
+  switch (score.kind) {
+    case 'POINTS':
+      return `${pointToString(score.pointsData.PLAYER_ONE)} - ${pointToString(
+        score.pointsData.PLAYER_TWO
+      )}`;
+
+    case 'FORTY': {
+      const p1 =
+        score.player === 'PLAYER_ONE' ? 'Forty' : pointToString(score.otherPoint);
+      const p2 =
+        score.player === 'PLAYER_ONE' ? pointToString(score.otherPoint) : 'Forty';
+
+      return `${p1} - ${p2}`;
+    }
+
+    case 'DEUCE':
+      return 'Deuce';
+
+
+    case 'ADVANTAGE':
+      return `Advantage ${playerToString(score.player)}`;
+
+    case 'GAME':
+      return `Game ${playerToString(score.player)}`;
+  }
+};
+
+export const stringToPoint = (str: string): Point => {
+  switch (str) {
+    case 'LOVE':
+      return love();
+    case 'FIFTEEN':
+      return fifteen();
+    case 'THIRTY':
+      return thirty();
+    default:
+      throw new Error(`Invalid point string: ${str}`);
+  }
+};
+
+
+
+export const scoreWhenDeuce = (winner: Player): Score => 
+  advantage(winner)
+;
 
 export const scoreWhenAdvantage = (
   advantagedPlayed: Player,
   winner: Player
 ): Score => {
-  throw new Error('not implemented');
+  if (isSamePlayer(advantagedPlayed, winner)) return game(winner);
+  return deuce();
 };
+
 
 export const scoreWhenForty = (
-  currentForty: unknown, // TO UPDATE WHEN WE KNOW HOW TO REPRESENT FORTY
+  currentForty: FortyData,
   winner: Player
 ): Score => {
-  throw new Error('not implemented');
+  if (isSamePlayer(currentForty.player, winner)) return game(winner);
+  return pipe(
+    incrementPoint(currentForty.otherPoint),
+    Option.match({
+      onNone: () => deuce(),
+      onSome: p => forty(currentForty.player, p) as Score
+    })
+  );
 };
-
 
 
 // Exercice 2
 // Tip: You can use pipe function from Effect to improve readability.
 // See scoreWhenForty function above.
 export const scoreWhenPoint = (current: PointsData, winner: Player): Score => {
-  throw new Error('not implemented');
+  // Récupère le point actuel du joueur gagnant et de l'autre joueur
+  const winnerPoint = current[winner];
+  const other = winner === 'PLAYER_ONE' ? 'PLAYER_TWO' : 'PLAYER_ONE';
+  const otherPoint = current[other];
+
+  // Essaie d’incrémenter le point du gagnant
+  return pipe(
+    incrementPoint(winnerPoint),
+    Option.match({
+      onNone: () => {
+        // Si incrementPoint retourne none, le joueur atteint 40 → Forty
+        return forty(winner, otherPoint);
+      },
+      onSome: (newPoint) => {
+        // Sinon, le joueur reste en POINTS
+        const newPoints: PointsData = {
+          ...current,
+          [winner]: newPoint
+        };
+        return points(newPoints.PLAYER_ONE, newPoints.PLAYER_TWO);
+      }
+    })
+  );
 };
+
 
 // Exercice 3
 export const scoreWhenGame = (winner: Player): Score => {
-  throw new Error('not implemented');
+  return game(winner);
 };
 
 export const score = (currentScore: Score, winner: Player): Score => {
-  throw new Error('not implemented');
+  switch (currentScore.kind) {
+    case 'POINTS':
+      return scoreWhenPoint(currentScore.pointsData, winner);
+
+    case 'FORTY':
+      return scoreWhenForty(
+        { player: currentScore.player, otherPoint: currentScore.otherPoint },
+        winner
+      );
+
+    case 'DEUCE':
+      return scoreWhenDeuce(winner);
+
+    case 'ADVANTAGE':
+      return scoreWhenAdvantage(currentScore.player, winner);
+
+    case 'GAME':
+      return currentScore;
+  }
 };
+
+const newGame: Score = points(love(), love());
+
+
+
