@@ -1,7 +1,7 @@
 import { describe, expect, test } from '@jest/globals';
-import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty, stringToPoint} from '..';
-import { stringToPlayer } from '../types/player';
-import { advantage, deuce, forty, game } from '../types/score';
+import { otherPlayer, playerToString, scoreWhenAdvantage, scoreWhenDeuce, scoreWhenForty, scoreWhenPoint, stringToPoint} from '..';
+import { Player, stringToPlayer } from '../types/player';
+import { advantage, deuce, fifteen, forty, game, love, PointsData } from '../types/score';
 import { thirty } from '../types/score';
 
 
@@ -78,6 +78,34 @@ test('Given player at 40 and other at 15 when other wins, score is 40 - 30', () 
     expect(score).toStrictEqual(scoreExpected);
   })
 });
+
+test('Given players at 0 or 15 points score kind is still POINTS', () => {
+  const current: PointsData = { 
+    PLAYER_ONE: love(), 
+    PLAYER_TWO: fifteen() 
+  };
+  const winner: Player = 'PLAYER_ONE';
+  const newScore = scoreWhenPoint(current, winner);
+  if (newScore.kind !== 'POINTS') {
+  throw new Error('Expected score to be POINTS');}
+  expect(newScore.pointsData.PLAYER_ONE).toStrictEqual(fifteen());
+  expect(newScore.pointsData.PLAYER_TWO).toStrictEqual(fifteen());
+});
+
+
+test('Given one player at 30 and win, score is forty', () => {
+  const current: PointsData = {
+    PLAYER_ONE: thirty(),
+    PLAYER_TWO: fifteen()
+  };
+  const winner: Player = 'PLAYER_ONE';
+  const newScore = scoreWhenPoint(current, winner);
+  if (newScore.kind !== 'FORTY') {
+  throw new Error('Expected score to be FORTY');}
+  expect(newScore.player).toBe('PLAYER_ONE');
+  expect(newScore.otherPoint).toStrictEqual(fifteen());
+});
+
 
 describe('Tests for transition functions', () => {
   // test('Given deuce, score is advantage to winner', () => {
