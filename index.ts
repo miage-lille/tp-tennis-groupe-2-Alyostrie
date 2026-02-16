@@ -150,7 +150,7 @@ export const scoreWhenPoint = (current: PointsData, winner: Player): Score => {
 
 // Exercice 3
 export const scoreWhenGame = (winner: Player): Score => {
-  throw new Error('not implemented');
+  return game(winner);
 };
 
 export const score = (currentScore: Score, winner: Player): Score => {
